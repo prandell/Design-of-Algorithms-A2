@@ -1,0 +1,144 @@
+/*
+ * Problem 1 in Assignment 2
+ * COMP20007 Design of Algorithms
+ * Semester 1 2019
+ *
+ * Written by: [ PATRICK RANDELL ]
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void intswap(int *first,int *second);
+int leftchild(int i);
+int rightchild(int i);
+int parent(int i);
+
+/* --- DO NOT CHANGE THE CODE BELOW THIS LINE --- */
+
+void problem_1_a();
+void problem_1_b();
+void print_usage_and_exit(char **argv);
+
+int main(int argc, char **argv) {
+  if (argc != 2) {
+    print_usage_and_exit(argv);
+  }
+
+  /* If the argument provided is "a" then run problem_1_a(),
+   * run problem_1_b() for "b", and fail otherwise. */
+  if (strcmp(argv[1], "a") == 0) {
+    problem_1_a();
+  } else if (strcmp(argv[1], "b") == 0) {
+    problem_1_b();
+  } else {
+    print_usage_and_exit(argv);
+  }
+
+  return 0;
+}
+
+/* Print the usage information and exit the program. */
+void print_usage_and_exit(char **argv) {
+  fprintf(stderr, "usage: %s [ab]\n", argv[0]);
+  exit(EXIT_FAILURE);
+}
+
+/* --- DO NOT CHANGE THE CODE ABOVE THIS LINE --- */
+
+//---------------------------Helper Functions---------------------------//
+
+//Finds a parents right child index
+int rightchild(int i) {
+	return 2*i+1;
+}
+
+//Finds a parents left child index
+int leftchild(int i) {
+	return 2*i;
+}
+
+//Finds a right childs parent index
+int parent(int i) {
+	return (i-1)/2;
+}
+
+void intswap(int *first,int *second) {
+	int temp= *first;
+	*first = *second;
+	*second=temp;
+	return;
+}
+
+//Recursive heapify function that gets passed subtree parent nodes
+void heapify(int arr[], int n, int i)  {
+	int left, right, largest;
+	left=leftchild(i);
+	right =rightchild(i);
+	if(left<n && arr[left] > arr[i]) {
+		largest = left;
+	} else {
+		largest = i;
+	}
+	
+	if (right<=n && arr[right] > arr[largest]) {
+		largest = right;
+	}
+	
+	if(largest != i) {
+		intswap(&arr[i],&arr[largest]);
+		heapify(arr,n,largest);
+	}
+}
+
+/* TODO: Implement your solution to Problem 1.a. in this function. */
+void problem_1_a() {
+	int n,c;
+	scanf("%d", &n);
+	int arr[n+1];
+	arr[0]=0;
+	c=n;
+	for (int i=1;i<=n;i++) {
+		scanf("%d", &arr[i]);
+	}
+	for (int i = parent(c); i > 0; i--) {
+        heapify(arr, n, i);
+    }
+    for (int j=1;j<=n;j++) {
+    	printf("%d\n",arr[j]);
+    }
+		
+}
+
+void rightheapify(int arr[], int n, int i)  {
+	int left, right;
+	left=leftchild(i);
+	right =rightchild(i);
+	if (right<=n && arr[right] < arr[left]) {
+		intswap(&arr[right], &arr[left]);
+		heapify(arr,n,left);
+	}
+}
+
+
+/* TODO: Implement your solution to Problem 1.b. in this function. */
+void problem_1_b() {
+	int n,c;
+	scanf("%d", &n);
+	int arr[n+1];
+	arr[0]=0;
+	c=n;
+	for (int i=1;i<=n;i++) {
+		scanf("%d", &arr[i]);
+	}
+	for (int i = parent(c); i > 0; i--) {
+        heapify(arr, n, i);
+    }
+    for (int i=1;i<n;i++) {
+    	rightheapify(arr,n,i);
+    }
+    for (int j=1;j<=n;j++) {
+    	printf("%d\n",arr[j]);
+    }
+}

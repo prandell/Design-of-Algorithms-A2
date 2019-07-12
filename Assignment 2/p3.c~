@@ -1,0 +1,121 @@
+/*
+ * Problem 3 in Assignment 2
+ * COMP20007 Design of Algorithms
+ * Semester 1 2019
+ *
+ * Written by: [ YOUR NAME HERE ]
+ */
+ 
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include "sorting.h"
+ #include <math.h>
+void quicksort(int *array, int n, int (*partition)(int *array, int n));
+void sortedArrayToBST(int *arr, int start, int end, int *out, int pos);
+void quicksort_first(int *array, int n);
+int insert(int arr[][2],int value,int pos,int depth, int* nodes);
+/* --- DO NOT CHANGE THE CODE BELOW THIS LINE --- */
+
+void problem_3();
+
+int main(int argc, char **argv) {
+  problem_3();
+  return 0;
+}
+
+/* --- DO NOT CHANGE THE CODE ABOVE THIS LINE --- */
+
+/* TODO: Implement your solution to Problem 3 in this function. */
+void problem_3() {
+	int n,  count = 0, i, j, value, space;
+	int heighttemp=0, height=0, nodes=0;
+ 
+	scanf("%d", &n);
+	space = (int)(2*(pow(2,n)-1));
+	printf("%d\n",space);
+	int a[space][2],b[n],c[n];
+	/*
+	for (i = 0; i < n; i++) {
+		scanf("%d",&value);
+		b[i]=value;
+		heighttemp=1+insert(a,value,0,0,&nodes);
+		if (heighttemp>height) {
+			height=heighttemp;
+		}
+	}*/
+	/*
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < count; j++) {
+			if(b[j] == c[j]) {
+				break;
+			}
+		}
+		if (j == count) {
+			c[count] = b[i];
+			count++;
+		}
+	}*/
+	/*
+	printf("%d\n", nodes);
+	printf("%d\n", height);
+	if (nodes%2!=1) {
+		c[count]=-1;
+		count++;
+	}
+	quicksort_first(c,count);
+	printf("%d\n", count);
+	int out[count];
+	sortedArrayToBST(c,0,count-1,out,0);
+	
+	for (i = 0; i < count; i++) {
+		printf("%d\n", out[i]);
+	}*/
+	
+}
+
+int insert(int arr[][2],int value,int pos,int depth, int* nodes) {
+	if (arr[pos][1]==0) {
+		arr[pos][0]=value;
+		arr[pos][1]=1;
+		*nodes=*nodes+1;
+		return depth;
+	}
+	
+	if (value>arr[pos][0]) {
+		return insert(arr,value,2*pos+2,depth+1,nodes);
+	} else if (value==arr[pos][0]) {
+		return -1;
+	} else {
+		return insert(arr,value,2*pos+1,depth+1,nodes);
+	}
+}
+
+
+void sortedArrayToBST(int *arr, int start, int end, int *out, int pos) {
+	
+	if (start > end) {
+      return;
+    }
+    /* Get the middle element and make it root */
+    int mid = (start + end)/2; 
+    out[pos]=arr[mid];
+    /* Recursively construct the left subtree and make it 
+       left child of root */
+    sortedArrayToBST(arr, start, mid-1,out,2*pos+1); 
+  
+    /* Recursively construct the right subtree and make it 
+       right child of root */
+    sortedArrayToBST(arr, mid+1, end,out,2*pos+2); 
+  
+    return; 
+}
+
+
+
+
+
+
+//asldhaskjdhkjashdjkahskdhkasdhaskhdkahsd
+void quicksort_first(int *array, int n) {
+  quicksort(array, n, partition_first_pivot);
+}

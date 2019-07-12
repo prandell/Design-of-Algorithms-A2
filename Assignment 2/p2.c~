@@ -1,0 +1,209 @@
+/*
+ * Problem 2 in Assignment 2
+ * COMP20007 Design of Algorithms
+ * Semester 1 2019
+ *
+ * Written by: [ YOUR NAME HERE ]
+ */
+
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+#include "stack.h"	
+
+/* --- DO NOT CHANGE THE CODE BELOW THIS LINE --- */
+
+void problem_2_a();
+void problem_2_b();
+void print_usage_and_exit(char **argv);
+
+int main(int argc, char **argv) {
+  if (argc != 2) {
+    print_usage_and_exit(argv);
+  }
+
+  /* If the argument provided is "a" then run problem_2_a(),
+   * run problem_2_b() for "b", and fail otherwise. */
+  if (strcmp(argv[1], "a") == 0) {
+    problem_2_a();
+  } else if (strcmp(argv[1], "b") == 0) {
+    problem_2_b();
+  } else {
+    print_usage_and_exit(argv);
+  }
+
+  return 0;
+}
+
+/* Print the usage information and exit the program. */
+void print_usage_and_exit(char **argv) {
+  fprintf(stderr, "usage: %s [ab]\n", argv[0]);
+  exit(EXIT_FAILURE);
+}
+
+/* --- DO NOT CHANGE THE CODE ABOVE THIS LINE --- */
+
+/* TODO: Implement your solution to Problem 2.a. in this function. */
+void problem_2_a() {
+	int shortest,edges=0,outdegree,from ,to, weight,n,first;
+	int i, j, k, l;
+
+	scanf("%d", &n);
+	int arr[n][2];
+	for (i=0;i<n;i++) {
+		arr[i][0]=INT_MAX;
+		arr[i][1]=-1;
+	}
+	arr[0][0]=0;
+	arr[0][1]=0;
+	for (j=0; j<n;j++) {
+		from=j;
+		scanf("%d",&outdegree);
+		k=0;
+		while (k<outdegree) {
+			scanf("%d %d",&to,&weight);
+			//If it hasnt already been visited, we know it wont contribute to
+			// the overall solution we want because of topological sort.
+			//We only want solutions starting from node 0.
+			if (arr[from][1]==-1) { 
+				k++; 
+				continue;
+			}
+			//only update values if theyre reduced, dynamic!
+			if ((arr[from][0]+weight)<arr[to][0]) {
+				arr[to][0]=(arr[from][0]+weight);
+				arr[to][1]=from;
+			}
+			k++;
+		}
+	}
+	l=n-1;
+	shortest=arr[n-1][0];
+	Stack *stack= new_stack();
+	stack_push(stack,n-1);
+	l=n-1;
+	while(l>0) {
+		stack_push(stack,arr[l][1]);
+		l=arr[l][1];
+		edges++;
+	}
+	first =stack_pop(stack);
+	if (first!=0) {
+		printf("No Path\n");
+		return;
+	}
+	printf("%d\n",shortest);
+	printf("%d\n", edges);
+	printf("%d\n",first);
+	while (stack_size(stack)) {
+		printf("%d\n",stack_pop(stack));
+	}
+	free_stack(stack);
+
+}
+
+/* TODO: Implement your solution to Problem 2.b. in this function. */
+void problem_2_b() {
+	int shortest,edges=0,outdegree,from ,to,using, weight,numbers,n,first,atmostk;
+	int i, j, k, l,o,p,m,q;
+
+	scanf("%d %d", &numbers,&atmostk);
+	n=numbers;
+	int graph[n][n];
+	int arrprev[n][2][atmostk+1];
+	//int arrnew[n][2];
+	
+	for (i=0;i<n;i++) {
+		for (int x=0;x<=atmostk;x++) {
+			arrprev[i][0][x]=INT_MAX;
+			arrprev[i][1][x]=-1;
+		}
+		//arrnew[i][0]=INT_MAX;
+		//arrnew[i][1]=-1;
+
+		for (p=0;p<n;p++) {
+			graph[i][p]=INT_MAX;
+		}
+	}
+	arrprev[0][0][0]=0;
+	arrprev[0][1][0]=0;
+	arrprev[0][0][1]=0;
+	arrprev[0][1][1]=0;
+	//arrnew[0][0]=0;
+	//arrnew[0][1]=0;
+
+	for (j=0; j<n;j++) {
+		from=j;
+		scanf("%d",&outdegree);
+		k=0;
+		while (k<outdegree) {
+				scanf("%d %d",&to,&weight);
+				graph[from][to]=weight;
+				k++;
+		}
+	}
+				
+	for (l=0;l<atmostk;l++) {
+		//for (p=1;p<n;p++) {	
+			//arrprev[p][0]=arrnew[p][0];
+			//arrprev[p][1]=arrnew[p][1];
+		//}
+		for (q=0;q<n;q++) {
+			if (arrprev[q][1][l]==-1) {} else{
+			for(m=0;m<n;m++) {
+				if ((graph[q][m]!=INT_MAX) && (arrprev[m][0][l+1] > arrprev[q][0][l]+graph[q][m])) {
+					arrprev[m][0][l+1]=arrprev[q][0][l]+graph[q][m];
+					arrprev[m][1][l+1]=q;
+				}
+			}
+			}
+		}
+	}
+
+	
+	shortest=arrprev[n-1][0][atmostk];
+	Stack *stack= new_stack();
+	int y=n-1;
+	stack_push(stack,y);
+	stack_push(stack,arrprev[y][1][atmostk]);
+	edges++;
+	l=atmostk-1;
+
+	y=arrprev[y][1][atmostk];
+	l=atmostk-1;
+	while(y>0) {
+		stack_push(stack,arrprev[y][1][l]);
+		y=arrprev[y][1][l];
+		edges++;
+		l--;
+	}
+	first =stack_pop(stack);
+	if (first!=0) {
+		printf("No Path\n");
+		return;
+	}
+	printf("%d\n",shortest);
+	printf("%d\n", edges);
+	printf("%d\n",first);
+	while (stack_size(stack)) {
+		printf("%d\n",stack_pop(stack));
+	}
+	free_stack(stack);
+	/*printf("    |");
+	for(j=0;j<n;j++) {
+		printf("%03d ",j);
+	}
+	for (j=0;j<n;j++) {
+		printf("%03d |",j); 
+	for (i=0;i<n;i++) {
+		if (graph[j][i]==INT_MAX) {
+			printf("Naa ");
+		}else{
+		printf("%03d ",graph[j][i]);}
+	}
+	printf("\n");
+	}*/
+}
+
